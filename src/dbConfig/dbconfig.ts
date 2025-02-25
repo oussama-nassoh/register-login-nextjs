@@ -1,19 +1,19 @@
-import mongoose from 'mongoose';
+import mysql from 'mysql2/promise';
 
-export async function connectToMongoDB() {
-	try {
-		mongoose.connect(process.env.MONGO_URI!);
-		const connection = mongoose.connection;
+const dbConfig = {
+  host: process.env.MYSQL_HOST || 'localhost',
+  user: process.env.MYSQL_USER || 'root',
+  password: process.env.MYSQL_PASSWORD || '',
+  database: process.env.MYSQL_DATABASE || 'mydatabase',
+};
 
-		connection.on('connected', () => {
-			console.log('Great! MongoDb is connected bro!');
-		});
-
-		connection.on('error', (err) => {
-			console.log('MongoDB connected ERROR. ' + err);
-			process.exit();
-		});
-	} catch (error) {
-		console.log('Ups! Something went wrong! ' + error);
-	}
+export async function connectToMySQL() {
+  try {
+    const connection = await mysql.createConnection(dbConfig);
+    console.log('Great! MySQL is connected bro!');
+    return connection;
+  } catch (error) {
+    console.error('MySQL connection ERROR:', error);
+    process.exit(1);
+  }
 }
